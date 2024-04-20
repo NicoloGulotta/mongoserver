@@ -1,0 +1,66 @@
+
+ 
+ ///Query usate con mongo compass 
+ 
+ {"isActive":false}
+{"age": {"$gt": 26}}
+{"age": {"$gt": 26, "$lte": 30}}
+{"$or": [{"eyeColor": "brown"}, {"eyeColor": "blue"}]}
+{"eyeColor": {"$ne": "green"}}
+{"$nor": [{"eyeColor": "green"}, {"eyeColor": "blue"}]}
+{"company": "FITCORE"},{"email": 1}
+ 
+///
+
+ booh
+ 
+ 
+ 
+ ===================== UGUAGLIANZA ==========================
+{name: "Stefano"} || {name: {$eq: "Stefano}} => tutti i documenti con il nome Stefano
+{age: 76} || {age: {$eq: 76}} => tutti i documenti con l'età pari a 76
+
+ ===================== DIUGUAGLIANZA ==========================
+{age: {$ne: 76}} => tutti i documenti che non hanno l'età pari a 76
+
+===================== INCLUSIONE ===========================
+{age: {$in: [24, 76]}} => tutti i documenti che hanno un età pari a 24 o 76
+
+===================== NON INCLUSO ====================================
+{age: {$nin: [24, 76]}} => tutti i documenti che non hanno un età pari a 24 o 76
+
+===================== STRETTAMENTE MAGGIORE O MINORE ====================================
+{age: {$gt: 30}} => restituisce tutti i documenti che abbiano un'età strettamente maggiore di 30
+{age: {$lt: 60}} => restituisce tutti i documenti che abbiano un'età strettamente minore di 60
+
+=====================  MAGGIORE UGUALE O MINORE UGUALE ====================================
+{age: {$gte: 30}} => restituisce tutti i documenti che abbiano un'età maggiore o uguale a 30
+{age: {$lte: 60}} => restituisce tutti i documenti che abbiano un'età minore o uguale a 60
+
+// ====================== O UNO O L'ALTRO ===============================
+{$or: [{age: 32}, {age: 76}]} => restituisce tutti i documenti che abbiano un'età uguale a 32 o uguale a 76
+
+// ====================== ENTRAMBI ===============================
+{$and: [{name: "Stefano"}, {age: 76}]} => restituisce tutti i documenti che abbiano un'età uguale a 32 o uguale a 76
+
+// ====================== COMBINAZIONE ======================================
+{age: {$gt: 30, $lte: 76}} => restituisce tutti i documenti con un'età strettamente maggiore di 30 e minore o uguale a 76
+
+// ======================= ESISTENZA ======================================
+{age: {$exists: true}} => restituisce tutti i documenti in cui il parametro età esista
+{age: {$exists: false}} => restituisce tutti i documenti in cui il parametro età NON esista
+
+// ===================== MATCH =======================================
+{category: {$all: ["adventure", "rpg"]}}
+
+{
+    _id: 4u392u592jf93i2,
+    title: "Prince of Persia",
+    category: ["action", "adventure", "rpg"]
+},
+
+{
+    _id: fjkkdsfjdksjf9w3in,
+    title: "Pokèmon",
+    category: ["adventure", "rpg"]
+}
