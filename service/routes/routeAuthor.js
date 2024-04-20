@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Author from "../models/modelAuthor.js";
-
+import CloudinaryMiddelware from "../middelware/multer.js";
 export const authorApi = Router();
 
 authorApi.get("/", async (req, res, next) => {
@@ -55,5 +55,15 @@ authorApi.delete("/:id", async (req, res, next) => {
         next(err);
     }
 });
-
+authorApi.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
+    try {
+        let UserUpdate = await Author.findByIdAndUpdate(
+            req.params.id,
+            { avatar: req.file.p },
+            { new: true },
+        );
+    } catch (error) {
+        // Handle errors
+    }
+});
 export default authorApi;

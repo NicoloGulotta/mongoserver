@@ -93,7 +93,8 @@ async function sendMail() {
         console.error('Error sending email:', error.message);
     }
 }
+// Avviamo la funzione per inviare la mail
+// sendMail();
 
-sendMail();
 // Avviamo la funzione per inizializzare server
 initServer();
