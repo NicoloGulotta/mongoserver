@@ -57,13 +57,22 @@ authorApi.delete("/:id", async (req, res, next) => {
 });
 authorApi.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
     try {
-        let UserUpdate = await Author.findByIdAndUpdate(
+
+        let authorUpdate = await Author.findByIdAndUpdate(
             req.params.id,
-            { avatar: req.file.p },
-            { new: true },
+            { avatar: req.file.path },
+            { new: true }
         );
+
+        if (!authorUpdate) {
+            return res.status(404).send({ error: "Author not found." });
+        }
+
+        res.send(authorUpdate);
     } catch (error) {
-        // Handle errors
+        console.error(error);
+        next(error);
     }
 });
+
 export default authorApi;
