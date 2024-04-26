@@ -1,57 +1,59 @@
 import { Router } from "express";
-import BlogPost from "../models/modelBlog.js";
-
-export const blogApi = Router();
-
-blogApi.get("/", async (req, res, next) => {
+import Blogs from "../models/modelBlog.js";
+import Comment from "../models/modelComment.js";
+import Cloudinary from "../middelware/multer.js"
+export const blogRoute = Router()
+blogRoute.get("/", async (req, res, next) => {
     try {
-        const blogPosts = await BlogPost.find();
-        res.json(blogPosts);
+        const page = req.query.page || 1;
+        let blogs = await Bolog.find(
+            req.query.title ? { titile: { $regex: req.query.title } } : {}
+        )
+            .limit(20)
+            .skip(20 * (page - 1))
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "author",
+                    select: ["name", "lastNmae", "avatar"],
+                },
+                options: {
+                    limit: 2
+                }
+            })
+        res.send(blogs)
     } catch (error) {
-        next(error);
+        next(error)
     }
-});
-blogApi.get("/:id", async (req, res, next) => {
+})
+blogRoute.get("/:id", async (req, res, next) => {
     try {
-        const blogPost = await BlogPost.findById(req.params.id);
-        if (!blogPost) {
-            return res.status(404).json({ message: "Blog post not found." });
-        }
-        res.json(blogPost);
-    } catch (err) {
-        next(err);
+        let blog = await Blogs.findById(req.params.id)
+        res.send(blog)
+    } catch (error) {
+        next(error)
     }
-});
-
-blogApi.post("/", async (req, res, next) => {
+})
+blogRoute.put("/:id", async (req, res, next) => {
     try {
-        const newPost = new BlogPost(req.body);
-        await newPost.save();
-        res.status(201).json({ message: "Blog post created successfully", post: newPost });
-    } catch (err) {
-        next(err);
+        let blog = await Blogs.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+        })
+        res.send(blog)
+    } catch (error) {
+        next(error)
     }
-});
+})
 
-blogApi.put("/:id", async (req, res, next) => {
+blogRoute.patch("/:id/cover", Cloudinary, async (req, res, next) => {
     try {
-        const updatedPost = await BlogPost.findByIdAndUpdate(req.params.id, req.body, { new: true }); // Return updated post
-        if (!updatedPost) {
-            return res.status(404).json({ message: "Blog post not found." });
-        }
-        res.json({ message: "Blog post updated successfully", post: updatedPost }); // Send message and updated post
-    } catch (err) {
-        next(err);
+        let blog = await Blogs.findByIdAndUpdate(
+            req.params.id,
+            { cover: req.file.path },
+            { new: true, }
+        )
+        res.send(blog)
+    } catch (error) {
+        next(error)
     }
-});
-
-blogApi.delete("/:id", async (req, res, next) => {
-    try {
-        await BlogPost.deleteOne({ _id: req.params.id });
-        res.status(204).send(); // No content response (204)
-    } catch (err) {
-        next(err);
-    }
-});
-
-export default blogApi;
+})

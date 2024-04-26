@@ -1,9 +1,9 @@
 import { Router } from "express";
 import Author from "../models/modelAuthor.js";
 import CloudinaryMiddelware from "../middelware/multer.js";
-export const authorApi = Router();
+export const authorRoute = Router();
 
-authorApi.get("/", async (req, res, next) => {
+authorRoute.get("/", async (req, res, next) => {
     try {
         let authors = await Author.find()
             .limit(20)
@@ -14,7 +14,7 @@ authorApi.get("/", async (req, res, next) => {
     }
 });
 
-authorApi.get("/:id", async (req, res, next) => {
+authorRoute.get("/:id", async (req, res, next) => {
     try {
         let author = await Author.findById(req.params.id)
         if (!author) {
@@ -25,7 +25,7 @@ authorApi.get("/:id", async (req, res, next) => {
         next(err);
     }
 });
-authorApi.get("/:id/blogPosts", async (req, res, next) => {
+authorRoute.get("/:id/blogPosts", async (req, res, next) => {
     try {
         let author = await Author.findById(req.params.id)
 
@@ -37,7 +37,7 @@ authorApi.get("/:id/blogPosts", async (req, res, next) => {
         next(error)
     }
 })
-authorApi.post("/", async (req, res, next) => {
+authorRoute.post("/", async (req, res, next) => {
     try {
         let author = await Author.create(req.body);
         res.status(201).send(author);
@@ -46,7 +46,7 @@ authorApi.post("/", async (req, res, next) => {
     }
 });
 
-authorApi.put("/:id", async (req, res, next) => {
+authorRoute.put("/:id", async (req, res, next) => {
     try {
         let author = await Author.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -60,7 +60,7 @@ authorApi.put("/:id", async (req, res, next) => {
     }
 });
 
-authorApi.delete("/:id", async (req, res, next) => {
+authorRoute.delete("/:id", async (req, res, next) => {
     try {
         await Author.deleteOne({ _id: req.params.id });
         res.status(204).send();
@@ -68,7 +68,7 @@ authorApi.delete("/:id", async (req, res, next) => {
         next(err);
     }
 });
-authorApi.get("/:id/avatar", async (req, res, next) => {
+authorRoute.get("/:id/avatar", async (req, res, next) => {
     try {
         let author = await Author.findById(req.params.id)
         if (!author) {
@@ -79,7 +79,7 @@ authorApi.get("/:id/avatar", async (req, res, next) => {
         next(err);
     }
 });
-authorApi.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
+authorRoute.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
     try {
 
         let authorUpdate = await Author.findByIdAndUpdate(
@@ -99,4 +99,4 @@ authorApi.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
     }
 });
 
-export default authorApi;
+export default authorRoute;
