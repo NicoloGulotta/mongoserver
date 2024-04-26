@@ -6,7 +6,7 @@ const commentSchema = new Schema(
             type: String,
             required: true,
         },
-        author: { type: Schema.Types.ObjectId, ref: "Authors", required: true }
+        author: { type: Schema.Types.ObjectId, ref: "Author", required: true }
     },
     { collection: "comments" }
 )

@@ -1,10 +1,11 @@
 import { Router } from "express";
 import Author from "../models/modelAuthor.js";
-import CloudinaryMiddelware from "../middelware/multer.js";
+import Cloudinary from "../middelware/multer.js";
 export const authorRoute = Router();
 
 authorRoute.get("/", async (req, res, next) => {
     try {
+        const page = req.query.page || 1
         let authors = await Author.find()
             .limit(20)
             .skip(20 * (page - 1))
@@ -79,7 +80,7 @@ authorRoute.get("/:id/avatar", async (req, res, next) => {
         next(err);
     }
 });
-authorRoute.patch("/:id/avatar", CloudinaryMiddelware, async (req, res, next) => {
+authorRoute.patch("/:id/avatar", Cloudinary, async (req, res, next) => {
     try {
 
         let authorUpdate = await Author.findByIdAndUpdate(

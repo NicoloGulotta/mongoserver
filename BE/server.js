@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 import cors from "cors";
 import nodemailer from 'nodemailer';
 // import helmet from "helmet";
-import routeAuthor from './service/routes/routeAuthor.js';
-import routeBlog from './service/routes/routeBlog.js'
+import { routeAuthor } from './service/routes/routeAuthor.js';
+import { routeBlog } from './service/routes/routeBlog.js'
 import {
     badRequestHendler,
     notfoundHandler,
