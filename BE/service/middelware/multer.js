@@ -1,5 +1,5 @@
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary"; //as = cambio ome dipendenza
+import { v2 as cloudinary } from "cloudinary"; //as = cambio nome dipendenza
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { config } from 'dotenv';
 config();

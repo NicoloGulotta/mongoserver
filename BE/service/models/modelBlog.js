@@ -28,10 +28,7 @@ const blogsSchema = new Schema(
                 required: true
             },
         },
-        author: {
-            type: Schema.Types.ObjectId,
-            ref: "Author",
-        },
+        comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]
     },
     { collection: "blogs" }
 )
