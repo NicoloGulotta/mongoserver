@@ -1,5 +1,5 @@
 {
-  "name": "mongoincipit",
+  "name": "mongoserver",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",

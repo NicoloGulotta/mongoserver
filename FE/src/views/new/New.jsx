@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import React, { useState, useCallback } from "react";
+import { Button, Container, Form, Alert } from "react-bootstrap"; // Import Alert for error display
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "./styles.css";
@@ -9,13 +9,23 @@ const NewBlogPost = props => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [text, setText] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Stato per indicatore di caricamento
+  const [error, setError] = useState(null); // Stato per memorizzare eventuali errori
 
   const handleChange = useCallback(value => {
     setText(draftToHtml(value));
   }, []);
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault();
+    setIsLoading(true); // Indica che la richiesta è in corso
+    setError(null); // Azzera eventuali errori precedenti
+
+    if (!title || !category) {
+      setError("Titolo e Categoria sono obbligatori");
+      setIsLoading(false);
+      return;
+    }
 
     const blogPostData = {
       title,
@@ -24,7 +34,7 @@ const NewBlogPost = props => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/blogs", {
+      const response = await fetch("http://localhost:3001/blogs/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(blogPostData)
@@ -41,7 +51,9 @@ const NewBlogPost = props => {
       setText("");
     } catch (error) {
       console.error("Error creating blog post:", error);
-      // Handle errors appropriately (e.g., display error message to user)
+      setError(error.message); // Imposta l'errore da visualizzare all'utente
+    } finally {
+      setIsLoading(false); // Termina lo stato di caricamento indipendentemente dall'esito
     }
   };
 
@@ -66,12 +78,13 @@ const NewBlogPost = props => {
           <Form.Label>Contenuto Blog</Form.Label>
           <Editor value={text} onChange={handleChange} className="new-blog-content" />
         </Form.Group>
+        {error && <Alert variant="danger">{error}</Alert>}  {/* Condizione per mostrare l'errore */}
         <Form.Group className="d-flex mt-3 justify-content-end">
           <Button type="reset" size="lg" variant="outline-dark">
             Reset
           </Button>
-          <Button type="submit" size="lg" variant="dark" style={{ marginLeft: "1em" }}>
-            Invia
+          <Button type="submit" size="lg" variant="dark" style={{ marginLeft: "1em" }} disabled={isLoading}>
+            {isLoading ? "Creazione in corso..." : "Invia"}
           </Button>
         </Form.Group>
       </Form>

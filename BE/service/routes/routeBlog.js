@@ -7,7 +7,7 @@ export const blogRoute = Router()
 blogRoute.get("/", async (req, res, next) => {
     try {
         const page = req.query.page || 1;
-        let blogs = await Bolog.find(
+        let blogs = await Blog.find(
             req.query.title ? { titile: { $regex: req.query.title } } : {}
         )
             .limit(20)
@@ -107,19 +107,12 @@ blogRoute.delete("/:id", async (req, res, next) => {
     }
 })
 
-// blogRoute.post("/", async (req, res, next) => {
-//     try {
-//       let blog = await Blog.create(req.body)
-//       const msg = {
-//         to: req.body.email, // Change to your recipient
-//         from: "...", // Change to your verified sender
-//         subject: "Grazie per aver postato su Strive Blog",
-//         html: `Hai postato un articolo "${req.body.title}" su Strive Blog.`,
-//       }
-//       await sgMail.send(msg)
-//       res.send(blog)
-//     } catch (error) {
-//       next(error)
-//     }
-//   })
+blogRoute.post("/", async (req, res, next) => {
+    try {
+        let blog = await Blogs.create(req.body)
+        res.send(blog)
+    } catch (error) {
+        next(error)
+    }
+})
 export default blogRoute

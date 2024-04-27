@@ -12,7 +12,7 @@ const blogsSchema = new Schema(
         },
         cover: {
             type: String,
-            required: true,
+            required: false,
         },
         content: {
             type: String,
@@ -21,11 +21,11 @@ const blogsSchema = new Schema(
         readTime: {
             value: {
                 type: Number,
-                required: true
+                required: false
             },
             unit: {
                 type: String,
-                required: true
+                required: false
             },
         },
         comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]

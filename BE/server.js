@@ -5,12 +5,16 @@ import cors from "cors";
 import nodemailer from 'nodemailer';
 // import helmet from "helmet";
 import routeAuthor from './service/routes/routeAuthor.js';
-import routeBlog from './service/routes/routeBlog.js'
+import routeBlog from './service/routes/routeBlog.js';
 import {
-    badRequestHendler,
-    notfoundHandler,
-    unauthorizedHandler
-} from './service/middelware/errorHandlers.js';
+    badRequestHandler,
+    unauthorizedHandler,
+    notFoundHandler,
+    handleError
+} from
+    './service/middelware/errorHandlers.js';
+
+
 // Inizializza la gestione dei file .env
 config();
 
@@ -29,18 +33,13 @@ app.use(express.json());
 app.use(cors());
 app.use('/authors', routeAuthor);
 app.use('/blogs', routeBlog);
-app.use(badRequestHendler) // 400
-app.use(unauthorizedHandler) // 401
-app.use(notfoundHandler) // 404
+app.use(badRequestHandler);
+app.use(unauthorizedHandler);
+app.use(notFoundHandler);
+app.use(handleError);
 
 app.get('/', (req, res) => {
     res.send('Ciao Mondo');
-});
-
-// Middleware globale per la gestione degli errori
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send(err.status);
 });
 
 // Funzione per inizializzare il server
