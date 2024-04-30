@@ -2,10 +2,10 @@ import express from 'express';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import cors from "cors";
-import nodemailer from 'nodemailer';
 // import helmet from "helmet";
 import routeAuthor from './service/routes/routeAuthor.js';
 import routeBlog from './service/routes/routeBlog.js';
+import { sendMail } from './service/middelware/sendMail.js';
 import {
     badRequestHandler,
     unauthorizedHandler,
@@ -17,7 +17,7 @@ import {
 
 // Inizializza la gestione dei file .env
 config();
-
+sendMail();
 // Crea una porta
 const PORT = process.env.LOCAL_PORT;
 
@@ -26,6 +26,7 @@ const app = express();
 
 // Middleware per la sicurezza
 // app.use(helmet());
+
 
 // Middleware per il parsing del body delle richieste in JSON
 app.use(express.json());
@@ -39,7 +40,7 @@ app.use(notFoundHandler);
 app.use(handleError);
 
 app.get('/', (req, res) => {
-    res.send('Ciao Mondo');
+    res.send('<h1>HELLO WOLRD</h1>');
 });
 
 // Funzione per inizializzare il server
@@ -59,41 +60,5 @@ const initServer = async () => {
         console.error("Connessione al database fallita!", err);
     }
 };
-async function sendMail() {
-    try {
-        // Configure email transporter
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
-
-        // Email content
-        const mailBody = `
-        <h1>Ciao!</h1>
-        <p>Questo è un messaggio di email di prova.</p>
-      `;
-
-        // Create email message object
-        const message = {
-            from: '"Nicolò" <israel.stiedemann@ethereal.email>',
-            to: 'test@gmail.com',
-            subject: 'Test Email ',
-            html: mailBody,
-        };
-
-        // Send email with error handling
-        const info = await transporter.sendMail(message);
-        console.log(`Email sent: ${info.messageId}`);
-    } catch (error) {
-        console.error('Error sending email:', error.message);
-    }
-}
-// Avviamo la funzione per inviare la mail
-// sendMail();
-
 // Avviamo la funzione per inizializzare server
 initServer();
