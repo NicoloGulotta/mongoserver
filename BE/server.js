@@ -2,10 +2,10 @@ import express from 'express';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import cors from "cors";
-// import helmet from "helmet";
+import helmet from "helmet";
 import routeAuthor from './service/routes/routeAuthor.js';
 import routeBlog from './service/routes/routeBlog.js';
-import { sendMail } from './service/middelware/sendMail.js';
+//import { sendMail } from './service/middelware/sendMail.js';
 import {
     badRequestHandler,
     unauthorizedHandler,
@@ -17,7 +17,7 @@ import {
 
 // Inizializza la gestione dei file .env
 config();
-sendMail();
+//sendMail();
 // Crea una porta
 const PORT = process.env.LOCAL_PORT;
 
@@ -25,7 +25,7 @@ const PORT = process.env.LOCAL_PORT;
 const app = express();
 
 // Middleware per la sicurezza
-// app.use(helmet());
+app.use(helmet());
 
 
 // Middleware per il parsing del body delle richieste in JSON

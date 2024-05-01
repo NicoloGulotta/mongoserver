@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Author from "../models/modelAuthor.js";
 import Cloudinary from "../middelware/multer.js";
+import { authMiddleware, generateJWT } from "../middelware/auth.js";
 export const authorRoute = Router();
 
 authorRoute.get("/", async (req, res, next) => {
@@ -40,13 +41,26 @@ authorRoute.get("/:id/blogPosts", async (req, res, next) => {
 })
 authorRoute.post("/", async (req, res, next) => {
     try {
-        let author = await Author.create(req.body);
+        let author = await Author.create({
+            ...req.body,
+            password: await bcrypt.hash(req.body.password, 10)
+        });
         res.status(201).send(author);
     } catch (err) {
         next(err);
     }
 });
+authRouter.get("/profile", authMiddleware, async (req, res, next) => {
+    // Utilizzando il middleware authMiddleware, l'oggetto  req
+    // avrà il parametro user popolato con i dati presi dal database
+    try {
+        let user = await Author.findById(req.user.id);
 
+        res.send(user);
+    } catch (err) {
+        next(err);
+    }
+});
 authorRoute.put("/:id", async (req, res, next) => {
     try {
         let author = await Author.findByIdAndUpdate(req.params.id, req.body, {

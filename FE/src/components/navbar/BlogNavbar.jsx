@@ -10,8 +10,7 @@ const NavBar = props => {
         <Navbar.Brand as={Link} to="/">
           <img className="blog-navbar-brand" alt="logo" src={logo} />
         </Navbar.Brand>
-
-        <Button as={Link} to="/new" className="blog-navbar-add-button bg-dark" size="lg">
+        <Button as={Link} to="/new" className="blog-navbar-add-button bg-dark" >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -24,6 +23,8 @@ const NavBar = props => {
           </svg>
           Nuovo Articolo
         </Button>
+        <Button as={Link} to="/registration" className="blog-navbar-add-button bg-dark " >Registrati</Button>
+        <Button as={Link} to="/login" className="blog-navbar-add-button bg-dark " > Accedi</Button>
       </Container>
     </Navbar>
   );
