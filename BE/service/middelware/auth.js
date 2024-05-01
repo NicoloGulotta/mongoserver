@@ -1,63 +1,49 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/modelUser.js';
-
-//Funzione per generare il token
-export const generatJWT = (payload) => {
-    //restituisco una promise
-    return Promise((resolve, reject) => {
-        jwt.sign(payload,
+import jwt from "jsonwebtoken"
+import Author from "../models/modelAuthor.js";
+export const generateJWT = (payload) => {
+    return new Promise((res, rej) =>
+        jwt.sign(
+            payload,
             process.env.JWT_SECRET,
-            //esprimo scadenza token
-            { expiresIn: "1d" },
+            { expiresIn: "1 day" },
             (err, token) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(token);
-                }
+                if (err) rej(err)
+                else res(token)
             }
-        );
-    });
-};
+        )
+    )
+}
 
-// Funzione per verificare il token
 export const verifyJWT = (token) => {
-    //verifico token tramite funzione verify
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            reject(err);
-        } else {
-            resolve(decoded);
-        }
-    });
-};
-//middelware da utilizzare nelle richieste con token necessario
+    return new Promise((res, rej) =>
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) res(err)
+            else res(decoded)
+        })
+    )
+}
+
 export const authMiddleware = async (req, res, next) => {
     try {
-        //verifico la presenza del token
-        if (!req.headers.authorization) {
-            res.status(400).send("Effettua il login")
-        } else {
+        if (!req.headers["authorization"]) res.status(401).send("Please login.")
+        else {
             const decoded = await verifyJWT(
-                req.headers.authorization.repalce("Bearer ", "")
-            );
-            //verifico esistenza token ed elimino dal risultato "issued at" e "expiration"
+                req.headers["authorization"].replace("Bearer ", "")
+            )
             if (decoded.exp) {
-                delete decoded.exp;
-                delete decoded.iat;
-                // recupero i dati di un utente dal database
-                const me = await User.findOne({
+                //if there is a token (otherwise it's an error)
+                delete decoded.iat
+                delete decoded.exp
+                const me = await Author.findOne({
                     ...decoded,
-                });
+                })
                 if (me) {
-                    req.user = me;
+                    req.user = me
                     next()
-                } else {
-                    res.status(401).send("Rieffettua il login";)
-                }
-            }
+                } else res.status(401).send("Author not found.")
+            } else res.status(401).send("Please login again.")
         }
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error)
     }
-};
+}

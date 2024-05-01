@@ -2,13 +2,16 @@ import { Router } from "express";
 import Blogs from "../models/modelBlog.js";
 import Comment from "../models/modelComment.js";
 import Cloudinary from "../middelware/multer.js"
-export const blogRoute = Router()
+import { authMiddleware } from "../middelware/auth.js";
+export const routeBlog = Router()
 
-blogRoute.get("/", async (req, res, next) => {
+routeBlog.get("/", async (req, res, next) => {
     try {
-        const page = req.query.page || 1;
-        let blogs = await Blog.find(
-            req.query.title ? { titile: { $regex: req.query.title } } : {}
+        //http://localhost:3001/blogs?title=tech&page=3
+
+        const page = req.query.page || 1
+        let blogs = await Blogs.find(
+            req.query.title ? { title: { $regex: req.query.title } } : {}
         )
             .limit(20)
             .skip(20 * (page - 1))
@@ -16,18 +19,19 @@ blogRoute.get("/", async (req, res, next) => {
                 path: "comments",
                 populate: {
                     path: "author",
-                    select: ["name", "lastNmae", "avatar"],
+                    select: ["name", "lastName", "avatar"],
                 },
                 options: {
-                    limit: 2
-                }
+                    limit: 2,
+                },
             })
         res.send(blogs)
     } catch (error) {
         next(error)
     }
 })
-blogRoute.get("/:id", async (req, res, next) => {
+
+routeBlog.get("/:id", async (req, res, next) => {
     try {
         let blog = await Blogs.findById(req.params.id)
         res.send(blog)
@@ -35,7 +39,8 @@ blogRoute.get("/:id", async (req, res, next) => {
         next(error)
     }
 })
-blogRoute.put("/:id", async (req, res, next) => {
+
+routeBlog.put("/:id", async (req, res, next) => {
     try {
         let blog = await Blogs.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -46,19 +51,22 @@ blogRoute.put("/:id", async (req, res, next) => {
     }
 })
 
-blogRoute.patch("/:id/cover", Cloudinary, async (req, res, next) => {
+routeBlog.patch("/:id/cover", Cloudinary, async (req, res, next) => {
     try {
         let blog = await Blogs.findByIdAndUpdate(
             req.params.id,
             { cover: req.file.path },
-            { new: true, }
+            {
+                new: true,
+            }
         )
         res.send(blog)
     } catch (error) {
         next(error)
     }
 })
-blogRoute.get("/:id/comments", async (req, res, next) => {
+
+routeBlog.get("/:id/comments", async (req, res, next) => {
     try {
         let post = await Blogs.findById(req.params.id).populate({
             path: "comments",
@@ -74,7 +82,22 @@ blogRoute.get("/:id/comments", async (req, res, next) => {
         next(error)
     }
 })
-blogRoute.get("/:id/comments/:commentsId", async (req, res, next) => {
+routeBlog.post("/:id/comments", authMiddleware, async (req, res, next) => {
+    try {
+        let comm = new Comment({ ...req.body, author: req.user._id })
+        await comm.save()
+
+        await Blogs.findByIdAndUpdate(req.params.id, {
+            $push: {
+                comments: comm._id,
+            },
+        })
+        res.send(comm)
+    } catch (error) {
+        next(error)
+    }
+})
+routeBlog.get("/:id/comments/:commentId", async (req, res, next) => {
     try {
         let comment = await Comment.findById(req.params.commentId).populate({
             path: "author",
@@ -86,33 +109,51 @@ blogRoute.get("/:id/comments/:commentsId", async (req, res, next) => {
         next(error)
     }
 })
-blogRoute.put("/:id/comments/:commentId", async (req, res, next) => {
+routeBlog.put("/:id/comments/:commentId", async (req, res, next) => {
     try {
         let comment = await Comment.findByIdAndUpdate(
             req.params.commentId,
             req.body,
             { new: true }
         )
+
         res.send(comment)
     } catch (error) {
         next(error)
     }
 })
-blogRoute.delete("/:id", async (req, res, next) => {
+routeBlog.delete("/:id/comments/:commentId", async (req, res, next) => {
     try {
-        await Blogs.findByIdAndDelete(req.params.id)
+        await Blog.findByIdAndDelete(req.params.id)
+
         res.sendStatus(204)
     } catch (error) {
         next(error)
     }
 })
 
-blogRoute.post("/", async (req, res, next) => {
+routeBlog.delete("/:id", async (req, res, next) => {
     try {
-        let blog = await Blogs.create(req.body)
+        await Blog.findByIdAndDelete(req.params.id)
+        res.sendStatus(204)
+    } catch (error) {
+        next(error)
+    }
+})
+
+routeBlog.post("/", authMiddleware, async (req, res, next) => {
+    try {
+        let blog = await Blogs.create({ ...req.body, author: req.user._id })
+        const msg = {
+            to: req.body.email, // Change to your recipient
+            from: "...", // Change to your verified sender
+            subject: "Grazie per aver postato su Strive Blog",
+            html: `Hai postato un articolo "${req.body.title}" su Strive Blog.`,
+        }
+        await sgMail.send(msg)
         res.send(blog)
     } catch (error) {
         next(error)
     }
 })
-export default blogRoute
+export default routeBlog;

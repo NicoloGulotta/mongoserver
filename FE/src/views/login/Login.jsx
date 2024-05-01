@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null); // State for error message
+    const [error, setError] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
@@ -35,7 +35,7 @@ const LoginForm = () => {
         <div className='d-flex align-items-center justify-content-center vh-100'>
             <div className='p-3 rounded bg-black w-25 text-white'>
                 <h2>Login</h2>
-                {error && <p className="text-danger">{error}</p>} {/* Display error message */}
+                {error && <p className="text-danger">{error}</p>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Label htmlFor="inputEmail">Email</Form.Label>
                     <Form.Control
