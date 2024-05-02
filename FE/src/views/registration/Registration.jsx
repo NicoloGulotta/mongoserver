@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+
 const RegistrationForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(null); // Stato per il messaggio di errore
+  // const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Impedisce il comportamento di default della form
+    event.preventDefault();
 
     // Validate form fields
-    const errors = {}; // Oggetto per memorizzare i messaggi di errore
+    const errors = {};
 
     if (!name || name.trim() === '') {
       errors.name = 'Il nome è richiesto';
@@ -29,21 +31,21 @@ const RegistrationForm = () => {
       errors.password = 'La password deve essere di almeno 8 caratteri';
     }
 
-    if (!confirmPassword || confirmPassword.trim() === '') {
-      errors.confirmPassword = 'La conferma della password è richiesta';
-    } else if (password !== confirmPassword) {
-      errors.confirmPassword = 'Le password non coincidono';
-    }
+    // if (!confirmPassword || confirmPassword.trim() === '') {
+    //   errors.confirmPassword = 'La conferma della password è richiesta';
+    // } else if (password !== confirmPassword) {
+    //   errors.confirmPassword = 'Le password non coincidono';
+    // }
 
     // Check if any errors exist before making the API call
     if (Object.keys(errors).length > 0) {
-      setError(errors); // Imposta lo stato di errore
+      setError(errors);
       return;
     }
 
     try {
       // Implement API call to register the user (replace with your actual API endpoint)
-      const response = await fetch('https://localhost:3001/registration', {
+      const response = await fetch('http://localhost:3001/authors/registration', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,19 +57,25 @@ const RegistrationForm = () => {
         const errorData = await response.json(); // Try to parse error response from server
         throw new Error(errorData.message || 'Registration failed'); // Handle non-2xx response codes with specific error messages
       }
-
+      // // Handle specific error scenarios
+      // if (errorData.errorCode === 'USER_ALREADY_EXISTS') {
+      //   setError({ email: 'Email già registrata' });
+      // } else {
+      //   setError({ general: 'Si è verificato un errore. Riprova più tardi.' });
+      // }
       // Handle successful registration (e.g., display a success message or redirect to login)
+      const token = await response.text(); // Assume the token is returned as plain text
+      localStorage.setItem('token', token); // Store the token in local storage
       console.log('Registration successful!');
     } catch (err) {
       setError(err.message || 'An error occurred'); // Imposta lo stato di errore
     }
-  };
-
+  }
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
       <div className="p-3 rounded bg-black w-25 text-white">
         <h2>Registration</h2>
-        {error && <p className="text-danger">{error}</p>} {/* Display error message */}
+        {error && <Error error={error} />}
         <Form onSubmit={handleSubmit}>
           <Form.Label htmlFor="inputName">Nome</Form.Label>
           <Form.Control
@@ -90,13 +98,13 @@ const RegistrationForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Form.Label htmlFor="confirmPassword">Conferma Password</Form.Label>
+          {/* <Form.Label htmlFor="confirmPassword">Conferma Password</Form.Label>
           <Form.Control
             type="password"
             id="confirmPassword"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          /> */}
           <Button
             type="submit"
             className="btn m-2 d-flex btn-primary align-items-center justify-content-center"
@@ -108,4 +116,16 @@ const RegistrationForm = () => {
     </div>
   );
 };
+
+const Error = ({ error }) => {
+  if (!error) return null;
+
+  return (
+    <p className="text-danger">
+      {error.password && <span>{error.password}</span>}
+      {error.confirmPassword && <span>{error.confirmPassword}</span>}
+    </p>
+  );
+};
+
 export default RegistrationForm;

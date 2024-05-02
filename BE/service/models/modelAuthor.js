@@ -1,8 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose"
 
 const authorSchema = new Schema(
     {
-        // _id //generato da mongo
         name: {
             type: String,
             required: true
@@ -17,6 +16,10 @@ const authorSchema = new Schema(
             required: true
 
         },
+        password: {
+            type: String,
+            required: true
+        },
         birthday: {
             type: String,
             required: true
@@ -26,7 +29,6 @@ const authorSchema = new Schema(
             type: String,
         }
     },
-
     { collection: "author" }
 )
 

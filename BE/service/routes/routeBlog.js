@@ -7,7 +7,6 @@ export const routeBlog = Router()
 
 routeBlog.get("/", async (req, res, next) => {
     try {
-        //http://localhost:3001/blogs?title=tech&page=3
 
         const page = req.query.page || 1
         let blogs = await Blogs.find(
@@ -144,13 +143,13 @@ routeBlog.delete("/:id", async (req, res, next) => {
 routeBlog.post("/", authMiddleware, async (req, res, next) => {
     try {
         let blog = await Blogs.create({ ...req.body, author: req.user._id })
-        const msg = {
-            to: req.body.email, // Change to your recipient
-            from: "...", // Change to your verified sender
-            subject: "Grazie per aver postato su Strive Blog",
-            html: `Hai postato un articolo "${req.body.title}" su Strive Blog.`,
-        }
-        await sgMail.send(msg)
+        // const msg = {
+        //     to: req.body.email, // Change to your recipient
+        //     from: "...", // Change to your verified sender
+        //     subject: "Grazie per aver postato su Strive Blog",
+        //     html: `Hai postato un articolo "${req.body.title}" su Strive Blog.`,
+        // }
+        // await sgMail.send(msg)
         res.send(blog)
     } catch (error) {
         next(error)

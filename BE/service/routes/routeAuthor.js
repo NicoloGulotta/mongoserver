@@ -1,9 +1,11 @@
 import { Router } from "express";
 import Author from "../models/modelAuthor.js";
 import Blog from "../models/modelBlog.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import Cloudinary from "../middelware/multer.js";
 import { authMiddleware, generateJWT } from "../middelware/auth.js";
+import { config } from "dotenv";
+config();
 export const routeAuthor = Router();
 
 routeAuthor.get("/", async (req, res, next) => {
@@ -18,19 +20,16 @@ routeAuthor.get("/", async (req, res, next) => {
         next(error)
     }
 })
-
 routeAuthor.post("/login", async ({ body }, res, next) => {
-    if (!body || !body.email || !body.password) {
-        return res.status(400).send("Invalid request body");
-    }
     try {
         let foundUser = await Author.findOne({
             email: body.email,
         })
         if (foundUser) {
-            const matching = await bcrypt.compare(body.password, foundUser.password)            if (matching) {
+            const matching = await bcrypt.compare(body.password, foundUser.password)
+            if (matching) {
                 const token = await generateJWT({
-                    name: foundUser.name,
+                    lastName: foundUser.lastName,
                     email: foundUser.email,
                 })
 
@@ -113,30 +112,25 @@ routeAuthor.delete("/:id", async (req, res, next) => {
 
 routeAuthor.post("/registration", async (req, res, next) => {
     try {
-        // Validate user data (optional, can be added here)
         const { name, email, password } = req.body;
 
-        // Basic email validation (example)
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             throw new Error('Invalid email format');
         }
 
-        // Hash password securely
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user using your database model
         const author = await Author.create({
             name,
             email,
             password: hashedPassword,
-            // ... other user properties (if applicable)
         });
 
-        // Handle successful registration
-        res.send(author); // Or a success message
+        res.send(author);
 
     } catch (error) {
-        console.error(error.message); // Log the error for debugging
+        next(error)
+        console.error(error.message);
         res.status(400).send({ error: error.message || 'Registration failed' }); // Send appropriate error response
     }
 });

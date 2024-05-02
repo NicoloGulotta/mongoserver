@@ -31,7 +31,6 @@ export const authMiddleware = async (req, res, next) => {
                 req.headers["authorization"].replace("Bearer ", "")
             )
             if (decoded.exp) {
-                //if there is a token (otherwise it's an error)
                 delete decoded.iat
                 delete decoded.exp
                 const me = await Author.findOne({
