@@ -22,20 +22,19 @@ routeAuthor.get("/", async (req, res, next) => {
 })
 routeAuthor.post("/login", async ({ body }, res, next) => {
     try {
-        let foundUser = await Author.findOne({
-            email: body.email,
-        })
-        if (foundUser) {
+        let foundUser = await Author.findOne({ email: body.email })
+        if (!foundUser) {
+            return res.status(401).send("Invalid credentials");
+        } else if (foundUser) {
             const matching = await bcrypt.compare(body.password, foundUser.password)
             if (matching) {
                 const token = await generateJWT({
-                    lastName: foundUser.lastName,
                     email: foundUser.email,
                 })
 
-                res.send({ user: foundUser, token })
+                res.send({ Author: foundUser, token })
             } else res.status(400).send("Wrong password")
-        } else res.status(400).send("User does not exist.")
+        }
     } catch (error) {
         next(error)
     }
@@ -43,7 +42,6 @@ routeAuthor.post("/login", async ({ body }, res, next) => {
 routeAuthor.get("/me", authMiddleware, async (req, res, next) => {
     try {
         let author = await Author.findById(req.user.id)
-
         res.send(author)
     } catch (error) {
         next(error)
@@ -58,7 +56,6 @@ routeAuthor.get("/:id", async (req, res, next) => {
         next(error)
     }
 })
-
 routeAuthor.get("/:id/blogPosts", async (req, res, next) => {
     try {
         let author = await Author.findById(req.params.id)
@@ -112,18 +109,21 @@ routeAuthor.delete("/:id", async (req, res, next) => {
 
 routeAuthor.post("/registration", async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, lastName, avatar, birthday } = req.body;
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            throw new Error('Invalid email format');
-        }
+        // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        //     throw new Error('Invalid email format');
+        // }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const author = await Author.create({
             name,
+            lastName,
             email,
             password: hashedPassword,
+            birthday,
+            avatar
         });
 
         res.send(author);

@@ -5,29 +5,45 @@ const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Prevent default form submission behavior
+        event.preventDefault();
+
+        if (!email || !password) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('http://localhost:3001/login', {
+            const response = await fetch('http://localhost:3001/authors/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`, // Consider a more secure storage solution
                 },
                 body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
-                throw new Error('Login failed'); // Handle non-2xx response codes
+                const errorData = await response.json();
+                setError(errorData.message || 'Login failed');
+            } else {
+                const data = await response.json();
+                const token = data.token;
+                const Author = data.Author;
+
+                // Store the token in local storage
+                localStorage.setItem('authToken', token);
+
+                // Redirect to the homepage or dashboard
+                window.location.href = '/';
             }
-
-            // Handle successful login (e.g., redirect to dashboard)
-
-        } catch (err) {
-            setError(err.message || 'An error occurred'); // Set error message
+        } catch (error) {
+            setError(error.message || 'An error occurred');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -37,23 +53,34 @@ const LoginForm = () => {
                 <h2>Login</h2>
                 {error && <p className="text-danger">{error}</p>}
                 <Form onSubmit={handleSubmit}>
-                    <Form.Label htmlFor="inputEmail">Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        id="inputEmail"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    // Add basic validation on email format
-                    />
-                    <Form.Label htmlFor="inputPassword5">Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        id="inputPassword5"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="inputEmail">Email address</Form.Label>
+                        <Form.Control
+                            type="email"
+                            id="inputEmail"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder="Enter email"
+                            autoComplete="email"
+                            autocorrect="off"
+                            autocapitalize="off"
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="inputPassword5">Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            id="inputPassword5"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={8}
+                            placeholder="Enter password"
+                        />
+                    </Form.Group>
                     <Button type="submit" className="btn m-2 d-flex btn-primary align-items-center justify-content-center">
-                        Submit
+                        {loading ? 'Loading...' : 'Submit'}
                     </Button>
                 </Form>
             </div>

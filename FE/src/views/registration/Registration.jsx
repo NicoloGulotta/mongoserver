@@ -3,11 +3,12 @@ import { Form, Button } from 'react-bootstrap';
 
 const RegistrationForm = () => {
   const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const [confirmPassword, setConfirmPassword] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [avatar, setAvatar] = useState('');
   const [error, setError] = useState(null);
-  const [token, setToken] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,6 +18,10 @@ const RegistrationForm = () => {
 
     if (!name || name.trim() === '') {
       errors.name = 'Il nome è richiesto';
+    }
+
+    if (!lastName || lastName.trim() === '') {
+      errors.lastName = 'Il cognome è richiesto';
     }
 
     if (!email || email.trim() === '') {
@@ -31,18 +36,15 @@ const RegistrationForm = () => {
       errors.password = 'La password deve essere di almeno 8 caratteri';
     }
 
-    // if (!confirmPassword || confirmPassword.trim() === '') {
-    //   errors.confirmPassword = 'La conferma della password è richiesta';
-    // } else if (password !== confirmPassword) {
-    //   errors.confirmPassword = 'Le password non coincidono';
-    // }
+    if (!birthday || birthday.trim() === '') {
+      errors.birthday = 'La data di nascita è richiesta';
+    }
 
     // Check if any errors exist before making the API call
     if (Object.keys(errors).length > 0) {
       setError(errors);
       return;
     }
-
     try {
       // Implement API call to register the user (replace with your actual API endpoint)
       const response = await fetch('http://localhost:3001/authors/registration', {
@@ -50,19 +52,14 @@ const RegistrationForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, lastName, email, password, birthday, avatar }),
       });
 
       if (!response.ok) {
         const errorData = await response.json(); // Try to parse error response from server
         throw new Error(errorData.message || 'Registration failed'); // Handle non-2xx response codes with specific error messages
       }
-      // // Handle specific error scenarios
-      // if (errorData.errorCode === 'USER_ALREADY_EXISTS') {
-      //   setError({ email: 'Email già registrata' });
-      // } else {
-      //   setError({ general: 'Si è verificato un errore. Riprova più tardi.' });
-      // }
+
       // Handle successful registration (e.g., display a success message or redirect to login)
       const token = await response.text(); // Assume the token is returned as plain text
       localStorage.setItem('token', token); // Store the token in local storage
@@ -71,6 +68,8 @@ const RegistrationForm = () => {
       setError(err.message || 'An error occurred'); // Imposta lo stato di errore
     }
   }
+
+
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
       <div className="p-3 rounded bg-black w-25 text-white">
@@ -83,6 +82,13 @@ const RegistrationForm = () => {
             id="inputName"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+          <Form.Label htmlFor="inputLastName">Cognome</Form.Label>
+          <Form.Control
+            type="text"
+            id="inputLastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
           <Form.Label htmlFor="inputEmail">Email</Form.Label>
           <Form.Control
@@ -98,13 +104,20 @@ const RegistrationForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* <Form.Label htmlFor="confirmPassword">Conferma Password</Form.Label>
+          <Form.Label htmlFor="inputBirthday">Data di nascita</Form.Label>
           <Form.Control
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          /> */}
+            type="date"
+            id="inputBirthday"
+            value={birthday}
+            onChange={(e) => setBirthday(e.target.value)}
+          />
+          <Form.Label htmlFor="inputAvatar">Avatar</Form.Label>
+          <Form.Control
+            type="text"
+            id="inputAvatar"
+            value={avatar}
+            onChange={(e) => setAvatar(e.target.value)}
+          />
           <Button
             type="submit"
             className="btn m-2 d-flex btn-primary align-items-center justify-content-center"
@@ -116,14 +129,17 @@ const RegistrationForm = () => {
     </div>
   );
 };
-
 const Error = ({ error }) => {
   if (!error) return null;
 
   return (
     <p className="text-danger">
+      {error.name && <span>{error.name}</span>}
+      {error.lastName && <span>{error.lastName}</span>}
+      {error.email && <span>{error.email}</span>}
       {error.password && <span>{error.password}</span>}
-      {error.confirmPassword && <span>{error.confirmPassword}</span>}
+      {error.birthday && <span>{error.birthday}</span>}
+      {error.avatar && <span>{error.avatar}</span>}
     </p>
   );
 };
