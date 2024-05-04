@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import './Login.css';
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -48,9 +49,9 @@ const LoginForm = () => {
     };
 
     return (
-        <div className='d-flex align-items-center justify-content-center vh-100'>
-            <div className='p-3 rounded bg-black w-25 text-white'>
-                <h2>Login</h2>
+        <div className='d-flex align-items-center login-form justify-content-center vh-100'>
+            <div className='p-3 rounded bg-black w-25 text-white login-container'>
+                <h2 className='login-title'>Login</h2>
                 {error && <p className="text-danger">{error}</p>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
