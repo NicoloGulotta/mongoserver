@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import './Login.css';
-
+import { Link } from 'react-router-dom';
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,7 +39,7 @@ const LoginForm = () => {
                 localStorage.setItem('authToken', token);
 
                 // Redirect to the homepage or dashboard
-                window.location.href = '/';
+                window.location.href = '/home';
             }
         } catch (error) {
             setError(error.message || 'An error occurred');
@@ -79,9 +79,12 @@ const LoginForm = () => {
                             minLength={8}
                             placeholder="Enter password"
                         />
+                        <Button as={Link} to="/registration" className="blog-navbar-add-button bg-dark mt-3" >Registrati</Button>
+
                     </Form.Group>
+
                     <Button type="submit" className="btn m-2 d-flex btn-primary align-items-center justify-content-center">
-                        {loading ? 'Loading...' : 'Submit'}
+                        {loading ? 'Loading...' : 'Accedi'}
                     </Button>
                 </Form>
             </div>

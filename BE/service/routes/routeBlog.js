@@ -140,9 +140,9 @@ routeBlog.delete("/:id", async (req, res, next) => {
     }
 })
 
-routeBlog.post("/", authMiddleware, async (req, res, next) => {
+routeBlog.post("/", async (req, res, next) => {
     try {
-        let blog = await Blogs.create({ ...req.body, author: req.user._id })
+        let blog = await Blogs.create({ ...req.body })
         // const msg = {
         //     to: req.body.email, // Change to your recipient
         //     from: "...", // Change to your verified sender

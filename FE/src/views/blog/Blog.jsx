@@ -8,31 +8,8 @@ import "./styles.css";
 const Blog = props => {
   const [blog, setBlog] = useState({});
   const [loading, setLoading] = useState(true);
-  const params = useParams();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const { id } = params;
 
-    const fetchBlog = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/blogs/${id}`);
-
-        if (!response.ok) {
-          throw new Error("Blog not found");
-        }
-
-        const data = await response.json();
-        setBlog(data);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        navigate("/404");
-      }
-    };
-
-    fetchBlog();
-  }, [params, navigate]);
 
   if (loading) {
     return <div>loading</div>;

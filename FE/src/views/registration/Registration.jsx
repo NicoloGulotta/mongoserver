@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
-
+import { Navigate } from 'react-router-dom';
 const RegistrationForm = () => {
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -64,6 +64,7 @@ const RegistrationForm = () => {
       const token = await response.text(); // Assume the token is returned as plain text
       localStorage.setItem('token', token); // Store the token in local storage
       console.log('Registration successful!');
+
     } catch (err) {
       setError(err.message || 'An error occurred'); // Imposta lo stato di errore
     }
@@ -71,7 +72,7 @@ const RegistrationForm = () => {
 
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100">
+    <div className="d-flex align-items-center justify-content-center vh-100 mt-5">
       <div className="p-3 rounded bg-black w-25 text-white">
         <h2>Registration</h2>
         {error && <Error error={error} />}
