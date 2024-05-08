@@ -3,7 +3,7 @@ import { Container, Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
-import post from "../../components/data/posts.json";
+import posts from "../../data/posts.json";
 import "./styles.css";
 const Blog = props => {
   const [blog, setBlog] = useState({});
@@ -12,14 +12,13 @@ const Blog = props => {
   const navigate = useNavigate();
   useEffect(() => {
     const { id } = params;
-    const blog = post.find(post => post._id.toString() === id);
+    const blog = posts.find(post => post._id.toString() === id);
 
     if (blog) {
       setBlog(blog);
-      navigate(blog);
       setLoading(false);
     } else {
-      navigate(blog);
+      navigate("/404");
       console.error("Blog not found");
     }
   }, []);
