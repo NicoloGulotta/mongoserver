@@ -32,8 +32,9 @@ routeBlog.get("/", async (req, res, next) => {
 
 routeBlog.get("/:id", async (req, res, next) => {
     try {
-        let blog = await Blogs.findById(req.params.id)
+        let blog = await Blogs.findById(req.params._id)
         res.send(blog)
+        console.log(blog)
     } catch (error) {
         next(error)
     }

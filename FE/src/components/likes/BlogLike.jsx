@@ -4,9 +4,9 @@ import { Button } from "react-bootstrap";
 const yourUserId = "123";
 export default function BlogLike({ defaultLikes, onChange }) {
   const [likes, setLikes] = useState(defaultLikes);
-  const miPiaceQuestoArticolo = likes.includes(yourUserId);
-  const toggleMiPiace = () => {
-    if (miPiaceQuestoArticolo) {
+  const iLikedThisArticle = likes.includes(yourUserId);
+  const toggleLike = () => {
+    if (iLikedThisArticle) {
       setLikes(likes.filter((id) => id !== yourUserId));
     } else {
       setLikes([...likes, yourUserId]);
@@ -15,15 +15,15 @@ export default function BlogLike({ defaultLikes, onChange }) {
   };
   useEffect(() => {
     onChange && onChange(likes);
-  }, [likes, onChange, miPiaceQuestoArticolo]);
+  }, [iLikedThisArticle]);
   return (
     <div>
       <Button
-        onClick={toggleMiPiace}
-        variant={miPiaceQuestoArticolo ? "dark" : "dark-outline"}
+        onClick={toggleLike}
+        variant={iLikedThisArticle ? "dark" : "dark-outline"}
       >
-        <AiOutlineLike /> {`${likes.length} mi piace`}
-      </Button>
+        <AiOutlineLike /> {`${likes.length}  like`}
+      </Button>{" "}
     </div>
   );
 }

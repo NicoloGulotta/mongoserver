@@ -111,9 +111,6 @@ routeAuthor.post("/registration", async (req, res, next) => {
     try {
         const { name, email, password, lastName, avatar, birthday } = req.body;
 
-        // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        //     throw new Error('Invalid email format');
-        // }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 

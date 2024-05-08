@@ -79,7 +79,7 @@ const LoginForm = () => {
                             minLength={8}
                             placeholder="Enter password"
                         />
-                        <Button as={Link} to="/registration" className="blog-navbar-add-button bg-dark mt-3" >Registrati</Button>
+                        <Button as={Link} to="/registration" className=" bg-dark mt-3" >Registrati</Button>
 
                     </Form.Group>
 

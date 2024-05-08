@@ -2,10 +2,7 @@ import { Schema, model } from "mongoose"
 import mongoose from "mongoose"
 const authorSchema = new Schema(
     {
-        // _id: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     auto: true,
-        // },
+
         name: {
             type: String,
             required: true

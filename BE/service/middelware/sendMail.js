@@ -30,7 +30,6 @@ export async function sendMail() {
       <p>Questo è un messaggio di email di prova.</p>
     `;
 
-                // Create email message object
                 const message = {
                     from: '"Nicolò" <israel.stiedemann@ethereal.email>',
                     to: 'test@gmail.com',
@@ -38,7 +37,6 @@ export async function sendMail() {
                     html: mailBody,
                 };
 
-                // Send email with error handling
                 const info = await transporter.sendMail(message);
                 console.log(`Email sent: ${info.messageId}`);
             } catch (error) {
