@@ -19,6 +19,7 @@ const Blog = props => {
       setLoading(false);
     } else {
       navigate("/404");
+      console.error("Blog not found");
     }
   }, []);
 
