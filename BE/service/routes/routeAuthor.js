@@ -8,7 +8,7 @@ import { config } from "dotenv";
 config();
 export const routeAuthor = Router();
 
-routeAuthor.get("/", async (req, res, next) => {
+routeAuthor.get("/home", async (req, res, next) => {
     try {
         const page = req.query.page || 1
 
@@ -43,6 +43,7 @@ routeAuthor.get("/me", authMiddleware, async (req, res, next) => {
     try {
         let author = await Author.findById(req.user.id)
         res.send(author)
+
     } catch (error) {
         next(error)
     }
@@ -113,7 +114,9 @@ routeAuthor.post("/registration", async (req, res, next) => {
 
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
+        // const token = generateJWT({
+        //     _id: author._id,
+        // })
         const author = await Author.create({
             name,
             lastName,
@@ -122,7 +125,6 @@ routeAuthor.post("/registration", async (req, res, next) => {
             birthday,
             avatar
         });
-
         res.send(author);
 
     } catch (error) {

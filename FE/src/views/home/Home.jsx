@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import BlogList from "../../components/blog/blog-list/BlogList";
+import User from "../user/User";
 import "./styles.css";
 
 const Home = props => {
@@ -23,6 +24,7 @@ const Home = props => {
       </Button>
       <h1 className="blog-main-title mb-3">Benvenuto sul Blog!</h1>
       <BlogList />
+      <User />
     </Container>
   );
 };

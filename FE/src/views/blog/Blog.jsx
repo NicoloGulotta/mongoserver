@@ -3,57 +3,31 @@ import { Container, Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
-import post from "../../components/data/posts.json";
+import posts from "../../data/posts.json";
 import "./styles.css";
 const Blog = props => {
   const [blog, setBlog] = useState({});
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
+  const params = useParams();
   const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        // Load data from the JSON file
-        const blogData = post.find((post) => post._id.toString() === id);
-        console.log("Dati del blog recuperati:", blogData);
-        if (blogData) {
-          setBlog(blogData);
-          setLoading(false);
-        } else {
-          // Handle blog not found scenario
-          console.error("Blog not found");
-          //  Redirect to a different route
-          // navigate('/home');
-          return <div>Blog not found.</div>;
-        }
-      } catch (error) {
-        console.error("Error fetching blog:", error);
-      }
-    };
+    const { id } = params;
+    const blog = posts.find(post => post._id.toString() === id);
 
-    fetchBlog();
-  }, [id]); // Dependency array to trigger re-fetch on ID change
+    if (blog) {
+      setBlog(blog);
+      setLoading(false);
+    } else {
+      navigate("/404");
+      console.error("Blog not found");
+    }
+  }, []);
 
   if (loading) {
-    return <div>Loading blog...</div>;
-  }
-
-  if (!blog) {
-    // Handle blog not found scenario (e.g., display error message)
-    console.error("Blog not found");
-    // Optional: Redirect to a different route
-    // navigate('/blogs');
-    return <div>Blog not found.</div>;
-  }
-
-  // Render blog details here (using blog data)
-  return (
-    <div className="blog-details-root">
-      {loading ? (
-        <div>Loading blog...</div>
-      ) : blog ? (
-        // Render blog details using blog data
+    return <div>loading</div>;
+  } else {
+    return (
+      <div className="blog-details-root">
         <Container>
           <Image className="blog-details-cover" src={blog.cover} fluid />
           <h1 className="blog-details-title">{blog.title}</h1>
@@ -81,12 +55,9 @@ const Blog = props => {
             }}
           ></div>
         </Container>
-      ) : (
-        <div>Blog not found.</div>
-      )}
-    </div>
-  );
-}
-
+      </div>
+    );
+  }
+};
 
 export default Blog;

@@ -55,17 +55,16 @@ const RegistrationForm = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Try to parse error response from server
-        throw new Error(errorData.message || 'Registration failed'); // Handle non-2xx response codes with specific error messages
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed')
       }
 
-      // Handle successful registration (e.g., display a success message or redirect to login)
-      const token = await response.text(); // Assume the token is returned as plain text
-      localStorage.setItem('token', token); // Store the token in local storage
-      console.log('Registration successful!');
+      const token = await response.text();
+      localStorage.setItem('token', token);
+      console.log('Registration successful!', token);
 
     } catch (err) {
-      setError(err.message || 'An error occurred'); // Imposta lo stato di errore
+      setError(err.message || 'An error occurred');
     }
   }
 
