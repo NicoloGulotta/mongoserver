@@ -1,24 +1,20 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import posts from "../../../data/posts.json";
 import BlogItem from "../blog-item/BlogItem";
 
-const BlogList = props => {
+const BlogList = ({ blogData }) => {
   return (
-    <Row>
-      {posts.map((post, i) => (
-        <Col
-          key={`item-${i}`}
-          md={4}
-          style={{
-            marginBottom: 50,
-          }}
-        >
-          <BlogItem key={post.title} {...post} />
-        </Col>
-      ))}
-    </Row>
-  );
-};
+    blogData?.length > 0 ? (
+      <Row>
+        {blogData.map((blog, i) => (
+          <Col key={`item-${i}`} md={4} style={{ marginBottom: 50 }} >
+            <BlogItem key={blog.title} {...blog} />
+          </Col>
+        ))}
+      </Row>
+    ) : (
+      <p>Loading blog blogs...</p>
+    ))
+}
 
 export default BlogList;

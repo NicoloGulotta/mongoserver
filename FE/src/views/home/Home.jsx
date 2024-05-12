@@ -1,14 +1,19 @@
-import React from "react";
-import { Container, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import BlogList from "../../components/blog/blog-list/BlogList";
-import User from "../user/User";
-import "./styles.css";
+// Home.js (receiving data as a prop)
+import React, { useState, useEffect } from 'react';
+import { Container, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import BlogFetcher from '../../data/blogFetch';
+import BlogList from '../../components/blog/blog-list/BlogList';
+import User from '../user/User';
+const Home = () => {
+  const [blogData, setBlogData] = useState(null);
 
-const Home = props => {
+  useEffect(() => {
+    BlogFetcher(fetchedData => setBlogData(fetchedData)); // Call BlogFetcher
+  }, []);
+
   return (
     <Container fluid="sm">
-
       <Button as={Link} to="/new" className="blog-navbar-add-button bg-dark mt-4" size="lg">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +28,7 @@ const Home = props => {
         Nuovo Articolo
       </Button>
       <h1 className="blog-main-title mb-3">Benvenuto sul Blog!</h1>
-      <BlogList />
+      {blogData && <BlogList blogData={blogData} />}
       <User />
     </Container>
   );

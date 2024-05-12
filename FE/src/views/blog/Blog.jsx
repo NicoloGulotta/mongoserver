@@ -1,35 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Image } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import BlogFetcher from "../../data/blogFetch"; // Assuming BlogFetcher is in the same directory
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
-import posts from "../../data/posts.json";
-import "./styles.css";
-const Blog = props => {
-  const [blog, setBlog] = useState({});
-  const [loading, setLoading] = useState(true);
+
+const Blog = () => {
+  // State variables to manage blog data and loading status
+  const [blog, setBlog] = useState(null); // Stores the fetched blog post data
+  const [loading, setLoading] = useState(true); // Indicates whether data is loading
+
+  // Object containing URL parameters (e.g., post ID)
   const params = useParams();
+
+  // Function for navigating between routes
   const navigate = useNavigate();
+
+  // Effect hook to fetch and display blog post details
   useEffect(() => {
-    const { id } = params;
-    const blog = posts.find(post => post._id.toString() === id);
+    const { _id } = params;
 
-    if (blog) {
-      setBlog(blog);
-      setLoading(false);
-    } else {
-      navigate("/404");
-      console.error("Blog not found");
-    }
-  }, []);
+    BlogFetcher.getPostById(_id)
+      .then((blogPost) => {
+        if (blogPost) {
+          setBlog(blogPost);
+          console.log(blogPost); // Optionally log the blog post data
+          setLoading(false);
+        } else {
+          console.error("Blog post not found"); // Log an error message
+          navigate("/*"); // Navigate to the 404 page
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching blog post:", error);
+      });
+  }, [params, navigate]);
 
+  // Conditional rendering based on loading status
   if (loading) {
-    return <div>loading</div>;
+    return <div>Caricamento in corso...</div>; // Display a loading message
   } else {
+    // Render the blog post content if data is available
     return (
       <div className="blog-details-root">
         <Container>
-          <Image className="blog-details-cover" src={blog.cover} fluid />
+          <Image
+            className="blog-details-cover"
+            src={blog.cover}
+            fluid
+          />
           <h1 className="blog-details-title">{blog.title}</h1>
 
           <div className="blog-details-container">
@@ -38,22 +57,17 @@ const Blog = props => {
             </div>
             <div className="blog-details-info">
               <div>{blog.createdAt}</div>
-              <div>{`lettura da ${blog.readTime.value} ${blog.readTime.unit}`}</div>
-              <div
-                style={{
-                  marginTop: 20,
-                }}
-              >
+              <div>
+                Tempo di lettura: {blog.readTime.value} {blog.readTime.unit}
+              </div>
+              <div style={{ marginTop: 20 }}>
                 <BlogLike defaultLikes={["123"]} onChange={console.log} />
               </div>
             </div>
           </div>
 
-          <div
-            dangerouslySetInnerHTML={{
-              __html: blog.content,
-            }}
-          ></div>
+          {/* Safely render the blog content */}
+          <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
         </Container>
       </div>
     );

@@ -1,18 +1,30 @@
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary"; //as = cambio nome dipendenza
+import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { config } from 'dotenv';
+import { config } from "dotenv";
+
 config();
+
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET
 });
-export default multer({
+
+export const avatarCloud = multer({
     storage: new CloudinaryStorage({
-        cloudinary: cloudinary,
+        cloudinary,
         params: {
-            folder: "avatars",
+            folder: "avatar"
         }
     })
-}).single("avatar");
+});
+
+export const coverCloud = multer({
+    storage: new CloudinaryStorage({
+        cloudinary,
+        params: {
+            folder: "cover"
+        }
+    })
+});
